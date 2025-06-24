@@ -1,0 +1,71 @@
+weather_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/weatherAUS.csv
+
+reporte_exploracion:
+  type: json.JSONDataset
+  filepath: data/08_reporting/reporte_exploracion.json
+
+datos_preparados:
+  type: pandas.CSVDataset
+  filepath: data/03_primary/datos_preparados.csv
+  save_args:
+    index: False
+
+datos_codificados:
+  type: pandas.CSVDataset
+  filepath: data/04_feature/datos_codificados.csv
+  save_args:
+    index: False
+
+X_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_train.csv
+  save_args:
+    index: False
+
+X_test:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/X_test.csv
+  save_args:
+    index: False
+
+y_train_clasificacion:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_train_clasificacion.csv
+  save_args:
+    index: False
+
+y_test_clasificacion:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_test_clasificacion.csv
+  save_args:
+    index: False
+
+y_train_regresion:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_train_regresion.csv
+  save_args:
+    index: False
+
+y_test_regresion:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/y_test_regresion.csv
+  save_args:
+    index: False
+
+reporte_random_forest_clasificacion:
+  type: json.JSONDataset
+  filepath: data/08_reporting/reporte_random_forest_clasificacion.json
+
+modelo_random_forest_clasificacion:
+  type: pickle.PickleDataset
+  filepath: data/06_models/random_forest_clasificacion.pkl
+
+modelo_ridge_regresion:
+  type: pickle.PickleDataset
+  filepath: data/06_models/ridge_regresion.pkl
+
+reporte_ridge_regresion:
+  type: json.JSONDataset
+  filepath: data/08_reporting/reporte_ridge_regresion.json
