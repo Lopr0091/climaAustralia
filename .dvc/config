@@ -1,0 +1,4 @@
+[core]
+    remote = onedrive_local
+['remote "onedrive_local"']
+    url = /mnt/c/Users/shado/OneDrive/dvc-modelos
