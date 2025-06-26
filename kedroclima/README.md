@@ -99,3 +99,22 @@ To automatically strip out all output cell contents before committing to `git`, 
 ## Package your Kedro project
 
 [Further information about building project documentation and packaging your project](https://docs.kedro.org/en/stable/tutorial/package_a_project.html)
+
+
+Todo lo anterior es el readme por defecto
+en requirements.txt se encuentran:
+ipython>=8.10
+jupyterlab>=3.0
+kedro~=0.19.14
+notebook
+Las rutas se trabajaron dentro de Ubuntu 24.04 LTS
+en entornoClima se encuentran el entorno para la consola y el kernel para el notebook
+source entornoClima/bin/activate
+En kedroclima se encuentra el notebook main main.ipynb que debe ejecutarse en orden
+Las carpetas siguen el standar de un proyecto Kedro
+en backend se pegan manualmente los modelos entrenados
+Se espera que se utilice XAMPP como control panel para servidor local (apache) y BD MySQL
+ejecutar index.js => node index.js
+se abre en: http://localhost:3000/predicciones
+para generar los datos sinteticos correr cron.js => node cron.js (en la raiz del proyecto)
+node cron.js > cron.log 2>&1 & permite correr backend y cron a la vez

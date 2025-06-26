@@ -1,8 +1,8 @@
-const express = require("express");
-const mysql = require("mysql");
+const express = require("express"); //Crea servidores en node.js es el equvialente a flask en python
+const mysql = require("mysql"); //Para conexiones SQL
 
-const app = express();
-const puerto = 3000;
+const app = express(); //Para el servidor
+const puerto = 3000; //Para el Puerto es mejor usar 3000 o 3005
 
 const conexion = mysql.createConnection({
   host: "192.168.144.1",
@@ -19,7 +19,7 @@ conexion.connect(error => {
   console.log("Conexión a MySQL establecida.");
 });
 
-app.get("/predicciones", (req, res) => {
+app.get("/predicciones", (req, res) => {//Define /predicciones
   conexion.query("SELECT * FROM predicciones_clima ORDER BY id_prediccion DESC", (error, resultados) => {
     if (error) {
       console.error("Error al hacer la consulta:", error);
