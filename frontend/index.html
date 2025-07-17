@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es" x-data="prediccionApp()" x-init="cargarPrediccion()">
+<head>
+  <meta charset="UTF-8">
+  <title>¿Lloverá Hoy?</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: #e6ecf1;
+    }
+    .card {
+      padding: 2rem;
+      border-radius: 1.5rem;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      background: white;
+      width: 90%;
+      max-width: 500px;
+    }
+    .afiche {
+      font-size: 2.2rem;
+      margin: 1rem 0;
+      font-weight: bold;
+    }
+    .lluvia, .fecha {
+      font-size: 1.2rem;
+      color: #333;
+    }
+    .si {
+      color: #007BFF;
+    }
+    .no {
+      color: #28a745;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>¿Lloverá según la predicción más reciente?</h1>
+    <p class="afiche" :class="color" x-text="mensaje"></p>
+
+    <template x-if="fecha !== null">
+      <p class="fecha">Predicción para: <strong x-text="fecha"></strong></p>
+    </template>
+
+    <template x-if="rainfall !== null">
+      <p class="lluvia">Cantidad estimada: <strong x-text="rainfall + ' mm'"></strong></p>
+    </template>
+  </div>
+
+  <script>
+    function prediccionApp() {
+      return {
+        mensaje: "Cargando...",
+        rainfall: null,
+        fecha: null,
+        color: "",
+        async cargarPrediccion() {
+          try {
+            const res = await fetch("http://localhost:3000/prediccion-reciente");
+            const data = await res.json();
+
+            if (data.llueve === null) {
+              this.mensaje = "No hay predicciones registradas aún.";
+              this.color = "error";
+              this.rainfall = null;
+              this.fecha = null;
+            } else {
+              this.mensaje = data.llueve
+                ? "¡Sí, lloverá!"
+                : "No, no lloverá.";
+              this.color = data.llueve ? "si" : "no";
+              this.rainfall = data.rainfall ?? null;
+              this.fecha = data.fecha;
+            }
+          } catch (e) {
+            this.mensaje = "Error al cargar la predicción.";
+            this.color = "error";
+            this.rainfall = null;
+            this.fecha = null;
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>

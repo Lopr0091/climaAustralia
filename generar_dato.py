@@ -17,6 +17,16 @@ conexion = mysql.connector.connect(
     password="",
     database="clima_modelos"
 )
+
+import os
+
+#conexion = mysql.connector.connect(
+#    host=os.environ.get("DB_HOST", "localhost"),
+#    user=os.environ.get("DB_USER", "root"),
+#    password=os.environ.get("DB_PASSWORD", ""),
+#    database=os.environ.get("DB_NAME", "clima_modelos")
+#)
+
 cursor = conexion.cursor()
 cursor.execute("SELECT MAX(id), MAX(Fecha) FROM datos_climaticos")
 ultimo_id, ultima_fecha = cursor.fetchone()

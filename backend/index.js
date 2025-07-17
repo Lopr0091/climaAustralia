@@ -1,11 +1,12 @@
-const express = require("express"); //Crea servidores en node.js es el equvialente a flask en python
-const mysql = require("mysql"); //Para conexiones SQL
+const express = require("express"); // Crea servidores en Node.js
+const mysql = require("mysql");     // Cliente MySQL original
+const path = require("path");       // Para manejar rutas de archivos
 
-const app = express(); //Para el servidor
-const puerto = 3000; //Para el Puerto es mejor usar 3000 o 3005
+const app = express();
+const puerto = 3000;
 
 const conexion = mysql.createConnection({
-  host: "192.168.144.1",
+  host: "192.168.144.1",  // IP host 
   user: "root",
   password: "",
   database: "clima_modelos"
@@ -19,7 +20,9 @@ conexion.connect(error => {
   console.log("Conexión a MySQL establecida.");
 });
 
-app.get("/predicciones", (req, res) => {//Define /predicciones
+app.use(express.static(path.join(__dirname)));
+
+app.get("/predicciones", (req, res) => {
   conexion.query("SELECT * FROM predicciones_clima ORDER BY id_prediccion DESC", (error, resultados) => {
     if (error) {
       console.error("Error al hacer la consulta:", error);
@@ -27,6 +30,35 @@ app.get("/predicciones", (req, res) => {//Define /predicciones
       return;
     }
     res.json(resultados);
+  });
+});
+
+app.get("/prediccion-reciente", (req, res) => {
+  const query = `
+    SELECT RainTomorrow_predicho AS llueve, 
+           Rainfall_predicho AS rainfall, 
+           fecha_prediccion AS fecha
+    FROM predicciones_clima
+    ORDER BY id_prediccion DESC
+    LIMIT 1
+  `;
+
+  conexion.query(query, (error, resultados) => {
+    if (error) {
+      console.error("Error al consultar la predicción:", error);
+      return res.status(500).json({ error: "Error en la base de datos" });
+    }
+
+    if (resultados.length === 0) {
+      return res.json({ llueve: null, rainfall: null, fecha: null });
+    }
+
+    const { llueve, rainfall, fecha } = resultados[0];
+    res.json({
+      llueve: llueve === "Yes",
+      rainfall: rainfall,
+      fecha: fecha
+    });
   });
 });
 

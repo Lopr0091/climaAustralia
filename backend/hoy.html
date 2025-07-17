@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es" x-data="prediccionApp()" x-init="cargarPrediccion()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>¿Lloverá Hoy?</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js" defer></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <div class="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md text-center space-y-4">
+    <h1 class="text-2xl font-bold text-gray-800">¿Lloverá según la predicción más reciente?</h1>
+
+    <p class="text-3xl font-extrabold" :class="color" x-text="mensaje"></p>
+
+    <template x-if="fecha !== null">
+      <p class="text-sm text-gray-600">
+        Predicción para: <strong x-text="fechaFormateada"></strong>
+      </p>
+    </template>
+
+    <template x-if="rainfall !== null">
+      <p class="text-sm text-gray-600">
+        Cantidad estimada: <strong x-text="rainfall + ' mm'"></strong>
+      </p>
+    </template>
+
+    <button @click="cargarPrediccion()" class="mt-4 w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-blue-700 transition">
+      Actualizar
+    </button>
+
+    <!-- Botón para volver atrás -->
+    <a href="index.html" class="block w-full mt-2 bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg hover:bg-gray-300 transition">
+      Volver al inicio
+    </a>
+  </div>
+
+  <script>
+    function prediccionApp() {
+      return {
+        mensaje: "Cargando...",
+        rainfall: null,
+        fecha: null,
+        fechaFormateada: "",
+        color: "",
+        async cargarPrediccion() {
+          try {
+            const res = await fetch("http://localhost:3000/prediccion-reciente");
+            const data = await res.json();
+
+            if (data.llueve === null) {
+              this.mensaje = "No hay predicciones registradas aún.";
+              this.color = "text-red-600";
+              this.rainfall = null;
+              this.fecha = null;
+              this.fechaFormateada = "";
+            } else {
+              this.mensaje = data.llueve
+                ? "¡Sí, lloverá!"
+                : "No, no lloverá.";
+              this.color = data.llueve ? "text-blue-600" : "text-green-600";
+              this.rainfall = data.rainfall ?? null;
+              this.fecha = data.fecha;
+              this.fechaFormateada = this.formatearFecha(this.fecha);
+            }
+          } catch (e) {
+            this.mensaje = "Error al cargar la predicción.";
+            this.color = "text-red-600";
+            this.rainfall = null;
+            this.fecha = null;
+            this.fechaFormateada = "";
+          }
+        },
+        formatearFecha(fechaISO) {
+          const fecha = new Date(fechaISO);
+          return fecha.toLocaleDateString("es-CL", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+        }
+      }
+    }
+  </script>
+</body>
+</html>

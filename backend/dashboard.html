@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es" x-data="dashboardApp()" x-init="cargarHistorial()">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Historial de Predicciones</title>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js" defer></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+
+  <div class="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-md space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-800">📊 Dashboard de Predicciones</h1>
+      <a href="index.html" class="text-blue-600 hover:underline">⬅ Volver al inicio</a>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <input type="date" class="border rounded-lg px-4 py-2 w-full sm:w-auto" x-model="filtroFecha">
+      <select class="border rounded-lg px-4 py-2 w-full sm:w-auto" x-model="filtroLluvia">
+        <option value="">Mostrar todo</option>
+        <option value="Yes">Solo días con lluvia</option>
+        <option value="No">Solo días sin lluvia</option>
+      </select>
+      <button @click="aplicarFiltros" class="bg-blue-600 text-white font-medium px-4 py-2 rounded-lg hover:bg-blue-700 transition w-full sm:w-auto">
+        Aplicar filtros
+      </button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm text-left text-gray-700 border rounded-lg overflow-hidden mt-4">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+          <tr>
+            <th scope="col" class="px-6 py-3">Fecha</th>
+            <th scope="col" class="px-6 py-3">¿Lloverá?</th>
+            <th scope="col" class="px-6 py-3">Cantidad (mm)</th>
+            <th scope="col" class="px-6 py-3">Fuente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template x-for="pred in historialFiltrado" :key="pred.id_prediccion">
+            <tr class="bg-white border-b hover:bg-gray-50">
+              <td class="px-6 py-4" x-text="formatearFecha(pred.fecha_prediccion)"></td>
+              <td class="px-6 py-4" :class="pred.RainTomorrow_predicho === 'Yes' ? 'text-blue-600' : 'text-green-600'" x-text="pred.RainTomorrow_predicho === 'Yes' ? 'Sí' : 'No'"></td>
+              <td class="px-6 py-4" x-text="pred.Rainfall_predicho + ' mm'"></td>
+              <td class="px-6 py-4" x-text="pred.fuente ?? '-'"></td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Botón estilizado de volver al inicio -->
+    <div class="pt-4">
+      <a href="index.html" class="inline-block bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg hover:bg-gray-300 transition">
+        ⬅ Volver al inicio
+      </a>
+    </div>
+  </div>
+
+  <script>
+    function dashboardApp() {
+      return {
+        historial: [],
+        historialFiltrado: [],
+        filtroFecha: "",
+        filtroLluvia: "",
+        async cargarHistorial() {
+          try {
+            const res = await fetch("http://localhost:3000/predicciones");
+            const data = await res.json();
+            this.historial = data;
+            this.historialFiltrado = data;
+          } catch (e) {
+            alert("Error al cargar el historial");
+          }
+        },
+        aplicarFiltros() {
+          this.historialFiltrado = this.historial.filter(pred => {
+            const coincideFecha = !this.filtroFecha || pred.fecha_prediccion.startsWith(this.filtroFecha);
+            const coincideLluvia = !this.filtroLluvia || pred.RainTomorrow_predicho === this.filtroLluvia;
+            return coincideFecha && coincideLluvia;
+          });
+        },
+        formatearFecha(fechaISO) {
+          const fecha = new Date(fechaISO);
+          return fecha.toLocaleDateString("es-CL", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+        }
+      }
+    }
+  </script>
+</body>
+</html>
